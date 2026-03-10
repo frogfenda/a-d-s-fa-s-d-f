@@ -11,7 +11,7 @@ void Board_Init(void)
     // ===============================================
     UART1_Init(115200); // 启动听诊器 (连电脑)
     UART2_Init(115200); // 启动加密专线 (连 ESP8266)
-
+        SysTick_Config(SystemCoreClock / 1000); // 设定为 1ms 中断一次
     W25Q64_Init(); 
      IIC_Init(); // 如果有就保留
 }

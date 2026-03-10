@@ -15,5 +15,6 @@
   ..\Library\inc\stm32f10x_usart.h ..\Library\inc\stm32f10x_wwdg.h \
   ..\Library\inc\misc.h E:\develop\Keil_v5\ARM\ARMCLANG\include\stdio.h \
   E:\develop\Keil_v5\ARM\ARMCLANG\include\string.h ..\System\Sys_tik.h \
-  ..\Hardware\usart.h ..\Hardware\shtc3.h ..\Hardware\w25q64.h \
-  ..\User\main.h ..\Hardware\my_iic.h
+  ..\Hardware\usart.h E:\develop\Keil_v5\ARM\ARMCLANG\include\stdbool.h \
+  ..\Hardware\shtc3.h ..\Hardware\w25q64.h ..\User\main.h \
+  ..\Hardware\my_iic.h

@@ -131,11 +131,16 @@ void PendSV_Handler(void)
   * @param  None
   * @retval None
   */
- #include "main.h"
+volatile uint32_t g_RunTimeMs = 0; 
+
+// (保留你原有的 HardFault 等其他中断...)
+
+/**
+  * @brief  滴答定时器中断 (系统的心脏，每 1ms 跳动一次)
+  */
 void SysTick_Handler(void)
 {
-
-
+    g_RunTimeMs++; // 工业级时基产生
 }
 
 /******************************************************************************/
@@ -175,16 +180,22 @@ void SysTick_Handler(void)
   */
 void USART2_IRQHandler(void)
 {
+    // 检查 IDLE (空闲) 标志位
     if(USART_GetITStatus(USART2, USART_IT_IDLE) != RESET)
     {
-        uint32_t temp = USART2->SR;
+        // 硬件时序要求：读 SR 后读 DR 清除 IDLE 标志
+        volatile uint32_t temp = USART2->SR;
         temp = USART2->DR;
+        (void)temp; // 防止编译器警告
 
+        // 暂停 DMA，准备更新指针
         DMA_Cmd(DMA1_Channel6, DISABLE); 
 
+        // 计算本次接收的数据长度
         UART2_RX_Len = RX_MAX_LEN - DMA_GetCurrDataCounter(DMA1_Channel6);
-        UART2_RX_Flag = 1;
+        UART2_RX_Flag = 1; // 竖起旗帜，通知主循环收菜
 
+        // 重置 DMA 接收数量并重启
         DMA_SetCurrDataCounter(DMA1_Channel6, RX_MAX_LEN); 
         DMA_Cmd(DMA1_Channel6, ENABLE); 
     }

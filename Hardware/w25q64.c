@@ -1,16 +1,26 @@
 #include "w25q64.h"
-
+#define SPI_TIMEOUT_MAX ((uint32_t)0x10000)
 // ==========================================
 // 内部底层函数：硬件 SPI 交换一个字节
 // ==========================================
 uint8_t SPI_Hardware_SwapByte(uint8_t txData)
 {
-    // 1. 等待发送缓冲区空 (TXE)
-    while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET);
-    // 2. 发送数据 (此时硬件自动产生时钟和移位)
+    uint32_t timeout = SPI_TIMEOUT_MAX;
+    
+    // 1. 等待发送缓冲区空 (TXE)，带超时
+    while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET) {
+        if((timeout--) == 0) return 0xFF; // 硬件总线锁死，安全撤退
+    }
+    
+    // 2. 发送数据
     SPI_I2S_SendData(SPI1, txData);
-    // 3. 等待接收缓冲区非空 (RXNE)，说明 8 个时钟打完了，数据挤回来了
-    while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);
+    
+    timeout = SPI_TIMEOUT_MAX;
+    // 3. 等待接收缓冲区非空 (RXNE)，带超时
+    while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET) {
+        if((timeout--) == 0) return 0xFF; // 硬件总线锁死，安全撤退
+    }
+    
     // 4. 返回收到的数据
     return SPI_I2S_ReceiveData(SPI1);
 }

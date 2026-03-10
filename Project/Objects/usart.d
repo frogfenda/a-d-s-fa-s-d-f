@@ -13,4 +13,5 @@
   ..\Library\inc\stm32f10x_rtc.h ..\Library\inc\stm32f10x_sdio.h \
   ..\Library\inc\stm32f10x_spi.h ..\Library\inc\stm32f10x_tim.h \
   ..\Library\inc\stm32f10x_usart.h ..\Library\inc\stm32f10x_wwdg.h \
-  ..\Library\inc\misc.h E:\develop\Keil_v5\ARM\ARMCLANG\include\stdio.h
+  ..\Library\inc\misc.h E:\develop\Keil_v5\ARM\ARMCLANG\include\stdio.h \
+  E:\develop\Keil_v5\ARM\ARMCLANG\include\stdbool.h

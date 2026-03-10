@@ -123,10 +123,21 @@ void UART2_Init(uint32_t bound)
 /**
  * @brief  全自动一键发射函数 (专供 USART2 / DMA1_Channel7 使用)
  */
-void UART2_DMA_Send(uint8_t *data, uint16_t len)
+bool UART2_DMA_Send_Safe(uint8_t *data, uint16_t len)
 {
+    // 🚨 防呆机制：检查 DMA 通道是否还在搬运上一批数据
+    // 如果 CNDTR 不为 0，说明硬件还在干活，绝对不能 DISABLE
+    if (DMA1_Channel7->CNDTR != 0) {
+        return false; 
+    }
+    
+    // 清除发送完成标志位 (必须先清零再使能，否则可能产生虚假完成)
+    DMA_ClearFlag(DMA1_FLAG_TC7);
+    
     DMA_Cmd(DMA1_Channel7, DISABLE);          
     DMA1_Channel7->CMAR = (uint32_t)data;     
     DMA1_Channel7->CNDTR = len;               
     DMA_Cmd(DMA1_Channel7, ENABLE);           
+    
+    return true;
 }

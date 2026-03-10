@@ -16,4 +16,5 @@
   ..\Library\inc\misc.h ..\Hardware\Board_init.h \
   E:\develop\Keil_v5\ARM\ARMCLANG\include\stdio.h \
   E:\develop\Keil_v5\ARM\ARMCLANG\include\string.h ..\System\Sys_tik.h \
-  ..\Hardware\usart.h ..\Hardware\shtc3.h ..\Hardware\my_iic.h
+  ..\Hardware\usart.h E:\develop\Keil_v5\ARM\ARMCLANG\include\stdbool.h \
+  ..\Hardware\shtc3.h ..\Hardware\my_iic.h

@@ -3,21 +3,18 @@
 
 #include "stm32f10x.h"
 #include <stdio.h>
+#include <stdbool.h> // 引入布尔类型
 
-#define RX_MAX_LEN 256  
+#define RX_MAX_LEN 256  // 建议给足一点缓存，ESP8266回传有时很长
 
-// ==========================================================
-// 【专线通信黑板】 专门给 USART2 (ESP8266) 使用
-// ==========================================================
 extern uint8_t  UART2_RX_Buffer[RX_MAX_LEN]; 
-extern volatile uint8_t  UART2_RX_Flag;      
-extern volatile uint16_t UART2_RX_Len;       
+extern volatile uint8_t  UART2_RX_Flag;  
+extern volatile uint16_t UART2_RX_Len;   
 
-// 函数声明
-void UART1_Init(uint32_t bound); // 听诊器：负责 printf
-void UART2_Init(uint32_t bound); // 专线：负责 ESP8266 + DMA
-void UART2_DMA_Send(uint8_t *data, uint16_t len); // 专线发射按钮
+void UART1_Init(uint32_t bound);
+void UART2_Init(uint32_t bound);
 
-int fputc(int ch, FILE *f);
+// 💡 架构师级：将无脑发送改为带状态校验的安全发送
+bool UART2_DMA_Send_Safe(uint8_t *data, uint16_t len);
 
 #endif
