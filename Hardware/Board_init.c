@@ -1,17 +1,16 @@
 #include "Board_init.h"
+#include "Sys_tik.h"
+#include "usart.h"
+#include "shtc3.h"
 
 void Board_Init(void)
 {
-    SystemInit();
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-    Delay_Init();
-
-    // ===============================================
-    // 🚨 架构师双轨制启动：两条串口独立工作！
-    // ===============================================
-    UART1_Init(115200); // 启动听诊器 (连电脑)
-    UART2_Init(115200); // 启动加密专线 (连 ESP8266)
-        SysTick_Config(SystemCoreClock / 1000); // 设定为 1ms 中断一次
-    W25Q64_Init(); 
-     IIC_Init(); // 如果有就保留
+    
+    SysTick_Init_For_Gateway(); // 🚨 心跳起搏器：没有它系统必死！
+    
+    UART1_Init(115200); // 调试串口
+    UART2_Init(115200); // ESP8266 串口
+    
+    SHTC3_Init();       // 传感器初始化
 }

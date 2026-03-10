@@ -131,71 +131,52 @@ void PendSV_Handler(void)
   * @param  None
   * @retval None
   */
-volatile uint32_t g_RunTimeMs = 0; 
+
 
 // (保留你原有的 HardFault 等其他中断...)
 
 /**
   * @brief  滴答定时器中断 (系统的心脏，每 1ms 跳动一次)
   */
-void SysTick_Handler(void)
-{
-    g_RunTimeMs++; // 工业级时基产生
-}
-
-/******************************************************************************/
-/*                 STM32F10x Peripherals Interrupt Handlers                   */
-/*  Add here the Interrupt Handler for the used peripheral(s) (PPP), for the  */
-/*  available peripheral interrupt handler's name please refer to the startup */
-/*  file (startup_stm32f10x_xx.s).                                            */
-/******************************************************************************/
-
-/**
-  * @brief  This function handles PPP interrupt request.
-  * @param  None
-  * @retval None
-  */
-/*void PPP_IRQHandler(void)
-{
-}*/
-
-/**
-  * @}
-  */ 
-
-
 #include "stm32f10x_it.h"
-#include "usart.h" // 必须包含，因为我们要用黑板变量
-
-/**
-  * @brief  USART1 中断服务函数
-  */
-#include "stm32f10x_it.h"
+#include "Sys_tik.h"
 #include "usart.h" 
 
-// (保留你原有的 HardFault 等中断...)
+// 引入 Sys_tik.c 中的递减器
+extern volatile uint32_t g_DelayTicks_ms;
 
 /**
-  * @brief  USART2 硬件中断服务函数 (专门监听 ESP8266 是否闭嘴)
+  * @brief  滴答定时器中断 (系统的心脏，1ms)
+  */
+void SysTick_Handler(void)
+{
+    g_RunTimeMs++; // 喂养非阻塞状态机
+    
+    if(g_DelayTicks_ms > 0) {
+        g_DelayTicks_ms--; // 喂养阻塞延时函数
+    }
+}
+
+/**
+  * @brief  USART2 硬件中断服务函数 (监听 ESP8266 突发数据)
   */
 void USART2_IRQHandler(void)
 {
-    // 检查 IDLE (空闲) 标志位
+    // 💡 架构师注：检测到空闲帧，说明一整包数据已经乖乖躺在 SRAM 里了
     if(USART_GetITStatus(USART2, USART_IT_IDLE) != RESET)
     {
-        // 硬件时序要求：读 SR 后读 DR 清除 IDLE 标志
+        // 硬件时序强制要求：先读 SR，再读 DR，以清除 IDLE 标志位，否则死锁中断
         volatile uint32_t temp = USART2->SR;
         temp = USART2->DR;
-        (void)temp; // 防止编译器警告
+        (void)temp; 
 
-        // 暂停 DMA，准备更新指针
-        DMA_Cmd(DMA1_Channel6, DISABLE); 
+        DMA_Cmd(DMA1_Channel6, DISABLE); // 暂停 DMA 搬运
 
-        // 计算本次接收的数据长度
+        // 计算本次实际接收长度：Buffer总长 - DMA剩余待搬运量
         UART2_RX_Len = RX_MAX_LEN - DMA_GetCurrDataCounter(DMA1_Channel6);
-        UART2_RX_Flag = 1; // 竖起旗帜，通知主循环收菜
+        UART2_RX_Flag = 1; // 竖起旗帜，通知主循环
 
-        // 重置 DMA 接收数量并重启
+        // 重置 DMA 指针，准备迎接下一包
         DMA_SetCurrDataCounter(DMA1_Channel6, RX_MAX_LEN); 
         DMA_Cmd(DMA1_Channel6, ENABLE); 
     }

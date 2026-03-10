@@ -1,5 +1,4 @@
-./objects/main.o: ..\User\main.c ..\Hardware\Board_init.h \
-  ..\CMSIS\stm32f10x.h ..\CMSIS\core_cm3.h \
+./objects/main.o: ..\User\main.c ..\CMSIS\stm32f10x.h ..\CMSIS\core_cm3.h \
   E:\develop\Keil_v5\ARM\ARMCLANG\include\stdint.h \
   ..\CMSIS\system_stm32f10x.h ..\User\stm32f10x_conf.h \
   ..\Library\inc\stm32f10x_adc.h ..\Library\inc\stm32f10x_bkp.h \
@@ -13,7 +12,8 @@
   ..\Library\inc\stm32f10x_rtc.h ..\Library\inc\stm32f10x_sdio.h \
   ..\Library\inc\stm32f10x_spi.h ..\Library\inc\stm32f10x_tim.h \
   ..\Library\inc\stm32f10x_usart.h ..\Library\inc\stm32f10x_wwdg.h \
-  ..\Library\inc\misc.h E:\develop\Keil_v5\ARM\ARMCLANG\include\stdio.h \
+  ..\Library\inc\misc.h ..\Hardware\Board_init.h \
+  E:\develop\Keil_v5\ARM\ARMCLANG\include\stdio.h \
   E:\develop\Keil_v5\ARM\ARMCLANG\include\string.h ..\System\Sys_tik.h \
   ..\Hardware\usart.h E:\develop\Keil_v5\ARM\ARMCLANG\include\stdbool.h \
   ..\Hardware\shtc3.h ..\Hardware\w25q64.h ..\User\main.h \
